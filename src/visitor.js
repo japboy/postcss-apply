@@ -2,6 +2,7 @@
 
 import balanced from 'balanced-match';
 import postcss from 'postcss';
+import getCustomPropertiesFromImports from './lib/get-custom-properties-from-imports';
 import { kebabify, isPlainObject } from './utils';
 
 const RE_PROP_SET = /^(--)([\w-]+)(\s*)([:]?)$/;
@@ -14,6 +15,7 @@ export default class Visitor {
   defaults = {
     preserve: false,
     sets: {},
+    importFrom: [],
   };
 
   constructor(options) {
@@ -49,6 +51,12 @@ export default class Visitor {
 
       this.cache[setName] = newRule;
     });
+  };
+
+  importFrom = () => {
+    const { importFrom } = this.options;
+    // promise any custom selectors are imported
+    return getCustomPropertiesFromImports(importFrom);
   };
 
   /**
